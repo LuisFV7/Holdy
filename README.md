@@ -1,0 +1,1 @@
+"Holdy is an app for an IoT project which consists on a smart delivery box which is installed at the entrance of a house. Both with the app and the smart delivery box you can intelligently manage your orders." 
