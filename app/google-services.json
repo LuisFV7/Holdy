@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153800226619",
+    "project_id": "holdy-d5379",
+    "storage_bucket": "holdy-d5379.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153800226619:android:93e44e9b66ab52017ba91e",
+        "android_client_info": {
+          "package_name": "com.example.holdy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGFhpGZOLfMu6RTKPoTlnSp8baaXtt8gY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
