@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="76dp"
         android:text="Bienvenido a Holdy"
         android:textColor="#23295c"
         android:textSize="34sp"
@@ -37,12 +37,12 @@
 
     <Button
         android:id="@+id/iniciarSesion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_width="229dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="100dp"
         android:backgroundTint="#4446C7"
         android:text="Iniciar Sesión"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,32 +50,30 @@
 
     <Button
         android:id="@+id/googleBoton"
-        android:layout_width="273dp"
-        android:layout_height="66dp"
+        android:layout_width="0dp"
+        android:layout_height="51dp"
         android:layout_marginTop="32dp"
         android:backgroundTint="#4446C7"
         android:paddingLeft="45dp"
         android:text="Continuar con Google"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/registrarse"
+        app:layout_constraintStart_toStartOf="@+id/registrarse"
         app:layout_constraintTop_toBottomOf="@+id/barra" />
 
     <Button
         android:id="@+id/registrarse"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="51dp"
         android:layout_marginTop="24dp"
         android:backgroundTint="#a5a6fa"
         android:text="Registrarse"
         android:textColor="#23295c"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/iniciarSesion"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="@+id/iniciarSesion"
-        app:layout_constraintTop_toBottomOf="@+id/iniciarSesion"
-        app:strokeColor="#3d3da8"
-        app:strokeWidth="1sp" />
+        app:layout_constraintTop_toBottomOf="@+id/iniciarSesion" />
 
     <TextView
         android:id="@+id/barra"
@@ -94,10 +92,10 @@
         android:layout_height="29dp"
         app:layout_constraintBottom_toBottomOf="@+id/googleBoton"
         app:layout_constraintEnd_toEndOf="@+id/googleBoton"
-        app:layout_constraintHorizontal_bias="0.025"
+        app:layout_constraintHorizontal_bias="0.067"
         app:layout_constraintStart_toStartOf="@+id/googleBoton"
         app:layout_constraintTop_toTopOf="@+id/googleBoton"
-        app:layout_constraintVertical_bias="0.459"
+        app:layout_constraintVertical_bias="0.513"
         app:srcCompat="@drawable/googlelogo" />
 
     <ImageView
