@@ -23,7 +23,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity
+public class LoginActivity extends AppCompatActivity
 {
     private static final int RC_SIGN_IN = 9001; // Código de solicitud para el inicio de sesión
     private GoogleSignInClient mGoogleSignInClient;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.login);
 
         // Inicializar Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Configura el botón de inicio de sesión de Google
-        findViewById(R.id.googleBoton).setOnClickListener(view -> signInWithGoogle());
+        findViewById(R.id.btnGoogle).setOnClickListener(view -> signInWithGoogle());
     }
 
     private void signInWithGoogle() {
@@ -97,13 +97,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void lanzarAcercaDe(View view){
-        Intent i = new Intent(this, AcercaDeActivity.class);
-        startActivity(i);
-    }
-
-    public void irALogin(View view) {
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
+    public void volverAMain(View view) {
+        finish();
     }
 }
