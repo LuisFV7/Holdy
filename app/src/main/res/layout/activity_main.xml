@@ -55,7 +55,7 @@
         android:layout_width="0dp"
         android:layout_height="51dp"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#4446C7"
+        android:backgroundTint="@color/google_btn_color"
         android:fontFamily="@font/inter_semibold"
         android:paddingLeft="45dp"
         android:text="Continuar con Google"
