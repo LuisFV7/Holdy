@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color1"
+    tools:context=".RegistrarteActivity">
+
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="31dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="64dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/volver"
+        android:onClick="volverAMain"
+        android:src="@drawable/volver"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvTitleRegistrarte"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/inter_medium"
+        android:text="Registrarte"
+        android:textColor="@color/azul_23295c"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+
+    <TextView
+        android:id="@+id/lblNombre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Nombre*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitleRegistrarte" />
+
+    <EditText
+        android:id="@+id/etNombre"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="textPersonName"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblNombre"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/lblApellidos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Apellidos*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etNombre" />
+
+    <EditText
+        android:id="@+id/etApellidos"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="textPersonName"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblApellidos"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/lblCorreo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Correo electrónico*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etApellidos" />
+
+    <EditText
+        android:id="@+id/etCorreo"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="textEmailAddress"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblCorreo"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/lblPass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Contraseña*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etCorreo" />
+
+    <EditText
+        android:id="@+id/etPass"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="textPassword"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblPass" />
+
+
+    <TextView
+        android:id="@+id/lblPass2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Confirmar contraseña*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etPass" />
+
+    <EditText
+        android:id="@+id/etPassConfirm"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="textPassword"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblPass2"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/lblTelefono"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Número de teléfono*"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etPassConfirm" />
+
+    <EditText
+        android:id="@+id/etTelefono"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input_innershadow"
+        android:fontFamily="@font/inter_regular"
+        android:inputType="phone"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColorHint="@color/hint_usuario_contrana"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblTelefono"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <Button
+        android:id="@+id/btnContinuar"
+        android:layout_width="174dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/colorbuton1"
+        android:elevation="2dp"
+        android:fontFamily="@font/inter_semibold"
+        android:text="@string/registrarte"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/etTelefono"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvTieneCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:fontFamily="@font/inter_regular"
+        android:text="Si tienes cuenta"
+        android:textColor="@color/texto_paginalogin"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnContinuar" />
+
+    <TextView
+        android:id="@+id/tvLoginLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/inter_regular"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="4dp"
+        android:text="@string/login_normal"
+        android:textColor="@color/azul_23295c"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvTieneCuenta"
+        app:layout_constraintStart_toEndOf="@+id/tvTieneCuenta" />
+
+
+    <TextView
+        android:id="@+id/tvOrRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/inter_semibold"
+        android:text="o"
+        android:textColor="@color/azul_23295c"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTieneCuenta" />
+
+    <View
+        android:id="@+id/lineLeftRegister"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="12dp"
+        android:alpha="0.85"
+        android:background="@color/azul_23295c"
+        app:layout_constraintBottom_toBottomOf="@id/tvOrRegister"
+        app:layout_constraintEnd_toStartOf="@id/tvOrRegister"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvOrRegister" />
+
+    <View
+        android:id="@+id/lineRightRegister"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="60dp"
+        android:alpha="0.85"
+        android:background="@color/azul_23295c"
+        app:layout_constraintBottom_toBottomOf="@id/tvOrRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvOrRegister"
+        app:layout_constraintTop_toTopOf="@id/tvOrRegister" />
+
+
+    <Button
+        android:id="@+id/btnGoogleRegister"
+        android:layout_width="229dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/google_btn_color"
+        android:elevation="2dp"
+        android:fontFamily="@font/inter_semibold"
+        android:gravity="right|center_vertical"
+        android:text="Continuar con Google"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tvOrRegister"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/googleLogoRegister"
+        android:layout_width="35dp"
+        android:layout_height="29dp"
+        app:layout_constraintBottom_toBottomOf="@id/btnGoogleRegister"
+        app:layout_constraintTop_toTopOf="@id/btnGoogleRegister"
+        app:layout_constraintStart_toStartOf="@id/btnGoogleRegister"
+        app:layout_constraintEnd_toEndOf="@id/btnGoogleRegister"
+        app:layout_constraintHorizontal_bias="0.067"
+        app:srcCompat="@drawable/googlelogo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
