@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_color1"
+    tools:context=".RegistrarteActivity">
+
+
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -268,18 +279,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnContinuar" />
 
-    <TextView
+    <Button
         android:id="@+id/tvLoginLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
+        android:backgroundTint="@android:color/transparent"
         android:fontFamily="@font/inter_regular"
         android:includeFontPadding="false"
-        android:paddingHorizontal="4dp"
+        android:minWidth="0dp"
+        android:textAllCaps="false"
+        android:textColor="#23295C"
+        android:minHeight="0dp"
+        android:paddingLeft="0dp"
+        android:paddingTop="0dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="0dp"
+        android:stateListAnimator="@null"
         android:text="@string/login_normal"
-        android:textColor="@color/azul_23295c"
         android:textSize="12sp"
         app:layout_constraintBaseline_toBaselineOf="@id/tvTieneCuenta"
         app:layout_constraintStart_toEndOf="@+id/tvTieneCuenta" />
@@ -354,3 +371,4 @@
         app:srcCompat="@drawable/googlelogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
