@@ -34,7 +34,7 @@ public class RegistrarteActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private GoogleSignInClient mGoogleSignInClient;   // Google için
+    private GoogleSignInClient mGoogleSignInClient;  
 
     private EditText etNombre, etApellidos, etCorreo, etPass, etPassConfirm, etTelefono;
 
@@ -53,13 +53,12 @@ public class RegistrarteActivity extends AppCompatActivity {
         etPassConfirm  = findViewById(R.id.etPassConfirm);
         etTelefono     = findViewById(R.id.etTelefono);
 
-        // Kayıt butonu (email + şifre)
+  
         findViewById(R.id.btnContinuar).setOnClickListener(v -> register());
 
-        // “Si tienes cuenta  Login” kısmındaki Login linki → LoginActivity
         TextView tvLogin = findViewById(R.id.tvLoginLink);
 
-        // 🔻 ALTINI ÇİZ (SpannableString ile)
+  
         SpannableString content = new SpannableString(tvLogin.getText().toString());
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
         tvLogin.setText(content);
@@ -69,7 +68,7 @@ public class RegistrarteActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        // ---------- GOOGLE SIGN-IN AYARI ----------
+ 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -77,16 +76,15 @@ public class RegistrarteActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // “Continuar con Google” butonu
+    
         findViewById(R.id.btnGoogleRegister).setOnClickListener(v -> signInWithGoogle());
     }
 
-    // XML’de android:onClick="volverAMain" var
+
     public void volverAMain(android.view.View view) {
         finish();
     }
 
-    // ---------- EMAIL + ŞİFRE İLE KAYIT ----------
     private void register() {
         String nombre   = val(etNombre);
         String apellidos= val(etApellidos);
@@ -95,7 +93,7 @@ public class RegistrarteActivity extends AppCompatActivity {
         String pass2    = val(etPassConfirm);
         String telefono = val(etTelefono);
 
-        boolean hasError = false;   // en az bir hata var mı?
+        boolean hasError = false;   
 
         // NOMBRE
         if (nombre.isEmpty()) {
@@ -113,7 +111,7 @@ public class RegistrarteActivity extends AppCompatActivity {
             etApellidos.setError(null);
         }
 
-        // CORREO
+        // CORREO ELECTRONICO
         if (TextUtils.isEmpty(correo) ||
                 !Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
             etCorreo.setError("Correo inválido");
@@ -135,11 +133,9 @@ public class RegistrarteActivity extends AppCompatActivity {
 
         // CONFIRMAR CONTRASEÑA
         if (pass2.isEmpty()) {
-            // ✅ Boşsa: "boş olamaz"
             etPassConfirm.setError("Confirmar contraseña requerida");
             hasError = true;
         } else if (!pass1.equals(pass2)) {
-            // ✅ Dolu ama farklıysa: ayrı hata
             etPassConfirm.setError("Las contraseñas no coinciden");
             hasError = true;
         } else {
