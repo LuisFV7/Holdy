@@ -24,6 +24,10 @@
             android:label="Acerca de ..."
             android:theme="@style/Theme.AppCompat.Light.Dialog"/>
         <activity android:name=".LoginActivity"/>
+        <activity
+            android:name=".RegistrarteActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>
