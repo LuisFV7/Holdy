@@ -18,10 +18,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -104,6 +104,10 @@ public class MainActivity extends AppCompatActivity
 
     public void irALogin(View view) {
         Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+    }
+    public void irARegistrarte(View view) {
+        Intent i = new Intent(this, RegistrarteActivity.class);
         startActivity(i);
     }
 }
