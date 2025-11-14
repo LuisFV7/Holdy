@@ -174,6 +174,7 @@
             android:focusable="true"
             android:fontFamily="@font/inter_regular"
             android:includeFontPadding="false"
+            android:onClick="irARegistrarte"
             android:paddingHorizontal="4dp"
             android:text="@string/registrate_ul"
             android:textColor="@color/azul_23295c"

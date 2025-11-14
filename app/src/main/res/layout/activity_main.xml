@@ -71,6 +71,7 @@
         android:layout_marginTop="24dp"
         android:backgroundTint="#a5a6fa"
         android:fontFamily="@font/inter_semibold"
+        android:onClick="irARegistrarte"
         android:text="Registrarse"
         android:textColor="#23295c"
         android:textSize="14sp"

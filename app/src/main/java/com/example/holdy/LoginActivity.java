@@ -154,4 +154,9 @@ public class LoginActivity extends AppCompatActivity {
     public void volverAMain(View view) {
         finish();
     }
+
+    public void irARegistrarte(View view) {
+        Intent i = new Intent(this, RegistrarteActivity.class);
+        startActivity(i);
+    }
 }
