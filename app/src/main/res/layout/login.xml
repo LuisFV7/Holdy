@@ -40,13 +40,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/etUsuario"
+            android:id="@+id/etCorreoLogin"
             android:layout_width="256dp"
             android:layout_height="42dp"
             android:layout_marginTop="38dp"
             android:background="@drawable/bg_input_innershadow"
             android:fontFamily="@font/inter_regular"
-            android:hint="@string/usuario"
+            android:hint="@string/correo"
             android:inputType="textPersonName"
             android:paddingStart="16dp"
             android:paddingTop="10dp"
@@ -77,7 +77,7 @@
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etUsuario" />
+            app:layout_constraintTop_toBottomOf="@id/etCorreoLogin" />
 
         <!--  Ajustado para apuntar a etContrasena -->
         <ImageButton

@@ -4,7 +4,7 @@
     <color name="background_color1">#D6D6F8</color>
     <string name="volver">Volver</string>
     <string name="app_logo">Logo</string>
-    <string name="usuario">Usuario</string>
+    <string name="correo">Correo electrónico</string>
     <string name="contraseña">Contraseña</string>
     <string name="toggle_password">Mostrar/ocultar contraseña</string>
     <string name="contrasena_ul">
