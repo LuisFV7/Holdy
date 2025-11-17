@@ -1,0 +1,45 @@
+package com.example.holdy;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class RecuperarEmailActivity extends AppCompatActivity {
+
+    private EditText etEmailReset;
+    private Button btnSendLink;
+    private ImageView btnClose;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recuperar_email);
+
+        etEmailReset = findViewById(R.id.etEmailReset);
+        btnSendLink = findViewById(R.id.btnSendLink);
+        btnClose = findViewById(R.id.btnClose);
+
+        btnClose.setOnClickListener(v -> finish());
+
+        btnSendLink.setOnClickListener(v -> {
+            String email = etEmailReset.getText().toString().trim();
+
+            if (email.isEmpty()) {
+                etEmailReset.setError("Introduce tu email");
+                etEmailReset.requestFocus();
+                Toast.makeText(this, "El email es obligatorio", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Pasar el email a la actividad de cambiar contraseña
+            Intent intent = new Intent(this, RecuperarContrasenaActivity.class);
+            intent.putExtra("email", email);
+            startActivity(intent);
+        });
+    }
+}
