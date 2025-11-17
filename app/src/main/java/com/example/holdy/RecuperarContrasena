@@ -1,0 +1,71 @@
+
+package com.example.holdy;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+public class RecuperarContrasenaActivity extends AppCompatActivity {
+
+    private EditText etPassword, etConfirm;
+    private Button btnSendReset;
+    private ImageView btnClose;
+
+    private String email;
+    private FirebaseAuth mAuth;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.recuperar_contrasena);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        email = getIntent().getStringExtra("email");
+
+        etPassword = findViewById(R.id.passwordReset);
+        etConfirm = findViewById(R.id.confirmPassword);
+        btnSendReset = findViewById(R.id.btnSendReset);
+        btnClose = findViewById(R.id.btnClose);
+
+        btnClose.setOnClickListener(v -> finish());
+
+        btnSendReset.setOnClickListener(v -> cambiarContrasena());
+    }
+
+    private void cambiarContrasena() {
+
+        String pass1 = etPassword.getText().toString().trim();
+        String pass2 = etConfirm.getText().toString().trim();
+
+        if (pass1.isEmpty() || pass2.isEmpty()) {
+            Toast.makeText(this, "Rellena ambos campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!pass1.equals(pass2)) {
+            etConfirm.setError("Las contraseñas no coinciden");
+            return;
+        }
+
+        if (pass1.length() < 6) {
+            etPassword.setError("Mínimo 6 caracteres");
+            return;
+        }
+
+        // AQUÍ enviamos el email, como lo quieres tú
+        mAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Se ha enviado un enlace a tu email", Toast.LENGTH_LONG).show();
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
+    }
+}
