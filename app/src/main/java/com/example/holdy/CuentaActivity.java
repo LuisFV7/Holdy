@@ -75,7 +75,7 @@ public class CuentaActivity extends AppCompatActivity {
                         startActivity(intent);
                         return true;
 
-                    } else if (id == R.id.action_eliminar) {
+                    }/* else if (id == R.id.action_eliminar) {
                         new AlertDialog.Builder(CuentaActivity.this)
                                 .setTitle("Eliminar cuenta")
                                 .setMessage("¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.")
@@ -83,7 +83,7 @@ public class CuentaActivity extends AppCompatActivity {
                                 .setNegativeButton("Cancelar", null)
                                 .show();
                         return true;
-                    }
+                    }*/
                     return false;
                 });
 
