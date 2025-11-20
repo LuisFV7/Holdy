@@ -53,9 +53,11 @@ public class RegistrarteActivity extends AppCompatActivity {
         etPassConfirm  = findViewById(R.id.etPassConfirm);
         etTelefono     = findViewById(R.id.etTelefono);
 
+
         findViewById(R.id.btnContinuar).setOnClickListener(v -> register());
 
         TextView tvLogin = findViewById(R.id.tvLoginLink);
+
 
         SpannableString content = new SpannableString(tvLogin.getText().toString());
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
@@ -66,7 +68,7 @@ public class RegistrarteActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        // GOOGLE SIGN-IN
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -74,26 +76,15 @@ public class RegistrarteActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+
         findViewById(R.id.btnGoogleRegister).setOnClickListener(v -> signInWithGoogle());
     }
 
-    // BOTÓN VOLVER
+
     public void volverAMain(android.view.View view) {
         finish();
     }
 
-    // -----------------------------------------
-    // FUNCIÓN PARA IR A INICIOACTIVITY
-    // -----------------------------------------
-    private void irAInicio() {
-        Intent i = new Intent(this, InicioActivity.class);
-        startActivity(i);
-        finish();
-    }
-
-    // -----------------------------------------
-    // REGISTRO NORMAL
-    // -----------------------------------------
     private void register() {
         String nombre   = val(etNombre);
         String apellidos= val(etApellidos);
@@ -104,17 +95,70 @@ public class RegistrarteActivity extends AppCompatActivity {
 
         boolean hasError = false;
 
-        // VALIDACIONES
-        if (nombre.isEmpty()) { etNombre.setError("Nombre requerido"); hasError = true; }
-        if (apellidos.isEmpty()) { etApellidos.setError("Apellidos requeridos"); hasError = true; }
-        if (TextUtils.isEmpty(correo) || !Patterns.EMAIL_ADDRESS.matcher(correo).matches()) { etCorreo.setError("Correo inválido"); hasError = true; }
-        if (pass1.isEmpty() || pass1.length() < 6) { etPass.setError("Mín. 6 caracteres"); hasError = true; }
-        if (!pass1.equals(pass2)) { etPassConfirm.setError("Las contraseñas no coinciden"); hasError = true; }
-        if (telefono.isEmpty()) { etTelefono.setError("Teléfono requerido"); hasError = true; }
+        // NOMBRE
+        if (nombre.isEmpty()) {
+            etNombre.setError("Nombre requerido");
+            hasError = true;
+        } else {
+            etNombre.setError(null);
+        }
 
-        if (hasError) return;
+        // APELLIDOS
+        if (apellidos.isEmpty()) {
+            etApellidos.setError("Apellidos requeridos");
+            hasError = true;
+        } else {
+            etApellidos.setError(null);
+        }
 
-        // REGISTRO EN FIREBASE
+        // CORREO ELECTRONICO
+        if (TextUtils.isEmpty(correo) ||
+                !Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            etCorreo.setError("Correo inválido");
+            hasError = true;
+        } else {
+            etCorreo.setError(null);
+        }
+
+        // CONTRASEÑA
+        if (pass1.isEmpty()) {
+            etPass.setError("Contraseña requerida");
+            hasError = true;
+        } else if (pass1.length() < 6) {
+            etPass.setError("Mín. 6 caracteres");
+            hasError = true;
+        } else {
+            etPass.setError(null);
+        }
+
+        // CONFIRMAR CONTRASEÑA
+        if (pass2.isEmpty()) {
+            etPassConfirm.setError("Confirmar contraseña requerida");
+            hasError = true;
+        } else if (!pass1.equals(pass2)) {
+            etPassConfirm.setError("Las contraseñas no coinciden");
+            hasError = true;
+        } else {
+            etPassConfirm.setError(null);
+        }
+
+
+        if (telefono.isEmpty()) {
+            etTelefono.setError("Teléfono requerido");
+            hasError = true;
+        } else if (!telefono.matches("^[0-9+()\\-\\s]{7,}$")) {
+            etTelefono.setError("Teléfono inválido");
+            hasError = true;
+        } else {
+            etTelefono.setError(null);
+        }
+
+
+        if (hasError) {
+            return;
+        }
+
+
         auth.createUserWithEmailAndPassword(correo, pass1)
                 .addOnCompleteListener(this, task -> {
                     if (!task.isSuccessful()) {
@@ -127,12 +171,13 @@ public class RegistrarteActivity extends AppCompatActivity {
                     FirebaseUser user = auth.getCurrentUser();
                     if (user == null) return;
 
+
                     String display = (nombre + " " + apellidos).trim();
                     user.updateProfile(new UserProfileChangeRequest.Builder()
                             .setDisplayName(display)
                             .build());
 
-                    // GUARDAR PERFIL EN FIRESTORE
+
                     Map<String, Object> perfil = new HashMap<>();
                     perfil.put("nombre", nombre);
                     perfil.put("apellidos", apellidos);
@@ -147,8 +192,9 @@ public class RegistrarteActivity extends AppCompatActivity {
                                         "Registro completado correctamente",
                                         Toast.LENGTH_LONG).show();
 
-                                // 👉 IR DIRECTAMENTE A INICIO
-                                irAInicio();
+                                Intent i = new Intent(RegistrarteActivity.this, LoginActivity.class);
+                                startActivity(i);
+                                finish();
                             })
                             .addOnFailureListener(e ->
                                     Toast.makeText(this,
@@ -160,9 +206,7 @@ public class RegistrarteActivity extends AppCompatActivity {
 
     private String val(EditText e) { return e.getText().toString().trim(); }
 
-    // -----------------------------------------
-    // GOOGLE SIGN-IN
-    // -----------------------------------------
+
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -184,17 +228,18 @@ public class RegistrarteActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        auth.signInWithCredential(GoogleAuthProvider.getCredential(account.getIdToken(), null))
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "¡Registro con Google completado!", Toast.LENGTH_SHORT).show();
+        Task<AuthResult> authResultTask = auth.signInWithCredential(
+                GoogleAuthProvider.getCredential(account.getIdToken(), null));
 
-                        // 👉 IR A INICIO TAMBIÉN CON GOOGLE
-                        irAInicio();
-
-                    } else {
-                        Toast.makeText(this, "Error al iniciar sesión con Firebase", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        authResultTask.addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                FirebaseUser user = auth.getCurrentUser();
+                Toast.makeText(this,
+                        "¡Bienvenido, " + (user != null ? user.getDisplayName() : "") + "!",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error al iniciar sesión con Firebase", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

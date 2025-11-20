@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -9,4 +10,5 @@
     <color name="colorbuton1">#7774E8</color>
     <color name="ripple_neutral">#1F000000</color>
     <color name="google_btn_color">#3D3DA8</color>
+    <color name="fondo_neutro">#D6D6F8</color>
 </resources>

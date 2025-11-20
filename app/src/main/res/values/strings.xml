@@ -15,6 +15,14 @@
     <string name="registrate_ul">
         <u>regístrate</u>
     </string>
-     <string name="login_normal">login</string>
+    <string name="login_normal">login</string>
     <string name="registrarte">C O N T I N U A R</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="volvericon">Volver2</string>
+
+
+    <string name="search">Buscar</string>
+    <string name="back">Volver</string>
+
+
 </resources>

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -95,6 +96,14 @@ public class LoginActivity extends AppCompatActivity {
 
         // Botón Google
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInWithGoogle());
+
+
+        //  Olvidar contraseña → RecuperarEmailActivity
+        Button btnContrasena = findViewById(R.id.btnContrasena);
+        btnContrasena.setOnClickListener(v -> {
+            Intent i = new Intent(LoginActivity.this, RecuperarEmailActivity.class);
+            startActivity(i);
+        });
     }
 
     @Override
@@ -180,6 +189,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     /*private void goHome() {
         startActivity(new Intent(this, MainActivity.class));
