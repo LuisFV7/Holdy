@@ -5,8 +5,4 @@
         android:id="@+id/action_editar"
         android:title="Editar" />
 
-    <item
-        android:id="@+id/action_eliminar"
-        android:title="Eliminar cuenta" />
-
 </menu>
