@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mAuth.getCurrentUser() != null) /*goHome()*/;
+        if (mAuth.getCurrentUser() != null);
     }
 
     // -----------------------------------------
@@ -189,13 +189,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
-
-    /*private void goHome() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
-    }*/
 
     public void volverAMain(View view) {
         finish();

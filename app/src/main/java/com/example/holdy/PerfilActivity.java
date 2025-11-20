@@ -439,4 +439,9 @@ public class PerfilActivity extends AppCompatActivity {
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
+
+    public void irAInicio(View view) {
+        startActivity(new Intent(this, InicioActivity.class));
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 }
