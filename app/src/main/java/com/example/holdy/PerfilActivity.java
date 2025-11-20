@@ -26,18 +26,15 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+//import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.firestore.DocumentReference;
+//import com.google.firebase.firestore.FirebaseFirestore;
+//import com.google.firebase.storage.FirebaseStorage;
+//import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PerfilActivity extends AppCompatActivity {
 
@@ -48,7 +45,6 @@ public class PerfilActivity extends AppCompatActivity {
     private TextView tvUserName;
     private Button btnCerrarSesion;
 
-    // FILA CUENTA COMPLETA
     private LinearLayout btnCuentaLayout;
     private TextView tvCuenta;
     private ImageView ivCuentaArrow;
@@ -60,11 +56,15 @@ public class PerfilActivity extends AppCompatActivity {
     private String uriFotoPerfil;
     private boolean tieneFoto = false;
 
-    // Firebase
+    // ----------------------------
+    //FIREBASE
+    // ----------------------------
+    /*
     private FirebaseUser currentUser;
     private FirebaseFirestore db;
     private DocumentReference userDoc;
     private StorageReference photoRef;
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,8 @@ public class PerfilActivity extends AppCompatActivity {
 
         btnChangePhoto.setImageResource(R.drawable.gridicons_add);
 
-        // ----- Firebase -----
+        /*
+        // --------- FIREBASE (COMENTADO) -------------
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -96,6 +97,7 @@ public class PerfilActivity extends AppCompatActivity {
         } else {
             tvUserName.setText("Usuario");
         }
+        */
 
         // ========= CLICK EN CUENTA =========
         View.OnClickListener irCuentaListener = v -> {
@@ -103,11 +105,11 @@ public class PerfilActivity extends AppCompatActivity {
             startActivity(intent);
         };
 
-        btnCuentaLayout.setOnClickListener(irCuentaListener);  // Toda la fila clicable
+        btnCuentaLayout.setOnClickListener(irCuentaListener);
         tvCuenta.setOnClickListener(irCuentaListener);
         ivCuentaArrow.setOnClickListener(irCuentaListener);
 
-        // ========= AJUSTES → Cambiar contraseña =========
+        // ========= AJUSTES =========
         ImageButton btnAjustes = findViewById(R.id.btnAjustes);
         btnAjustes.setOnClickListener(v -> {
             Intent i = new Intent(PerfilActivity.this, CambiarContrasenaPerfilActivity.class);
@@ -132,12 +134,15 @@ public class PerfilActivity extends AppCompatActivity {
                         } catch (SecurityException ignored) {}
 
                         uriFotoPerfil = uri.toString();
+
+                        //mostrar dentro del círculo
                         ponerFoto(foto, uriFotoPerfil);
 
                         tieneFoto = true;
                         btnChangePhoto.setImageResource(R.drawable.edit);
 
-                        uploadFotoAFirebase(uri);
+                        //Firebase comentado
+                        //uploadFotoAFirebase(uri);
 
                     } else {
                         Toast.makeText(this,
@@ -152,13 +157,17 @@ public class PerfilActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         if (uriUltimaFoto != null) {
+
                             uriFotoPerfil = uriUltimaFoto.toString();
+
+                            //mostrar dentro del círculo
                             ponerFoto(foto, uriFotoPerfil);
 
                             tieneFoto = true;
                             btnChangePhoto.setImageResource(R.drawable.edit);
 
-                            uploadFotoAFirebase(uriUltimaFoto);
+                            //Firebase comentado
+                            //uploadFotoAFirebase(uriUltimaFoto);
                         }
                     } else {
                         Toast.makeText(this,
@@ -180,55 +189,19 @@ public class PerfilActivity extends AppCompatActivity {
         btnCerrarSesion.setOnClickListener(v -> mostrarDialogoCerrarSesion());
     }
 
+    /*
     @Override
     protected void onResume() {
         super.onResume();
         if (currentUser != null) cargarPerfilDeFirebase();
     }
+    */
 
-    private void cargarPerfilDeFirebase() {
-        if (userDoc == null) return;
-
-        userDoc.get()
-                .addOnSuccessListener(snapshot -> {
-                    if (snapshot.exists()) {
-                        String nombre    = snapshot.getString("nombre");
-                        String apellidos = snapshot.getString("apellidos");
-                        String fotoUrl   = snapshot.getString("fotoPerfil");
-
-                        if (nombre != null && apellidos != null) {
-                            tvUserName.setText(nombre + " " + apellidos);
-                        } else if (nombre != null) {
-                            tvUserName.setText(nombre);
-                        } else {
-                            tvUserName.setText("Usuario");
-                        }
-
-                        if (fotoUrl != null && !fotoUrl.isEmpty()) {
-                            uriFotoPerfil = fotoUrl;
-                            tieneFoto = true;
-                            btnChangePhoto.setImageResource(R.drawable.edit);
-                            ponerFoto(foto, uriFotoPerfil);
-                        } else {
-                            resetSoloVistaDeFoto();
-                        }
-
-                    } else {
-                        tvUserName.setText("Usuario");
-                        resetSoloVistaDeFoto();
-                    }
-                });
-    }
-
-    private void resetSoloVistaDeFoto() {
-        uriFotoPerfil = null;
-        tieneFoto = false;
-        foto.setImageResource(R.drawable.ic_perfil);
-        btnChangePhoto.setImageResource(R.drawable.gridicons_add);
-    }
+    // ----------- BOTTON SHEETS -------------
 
     private void mostrarBottomSheetElegirOrigen() {
-        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog =
+                new com.google.android.material.bottomsheet.BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_origen_foto, null);
         dialog.setContentView(view);
 
@@ -249,7 +222,8 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void mostrarBottomSheetFotoExistente() {
-        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        com.google.android.material.bottomsheet.BottomSheetDialog dialog =
+                new com.google.android.material.bottomsheet.BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_foto_existente, null);
         dialog.setContentView(view);
 
@@ -339,95 +313,45 @@ public class PerfilActivity extends AppCompatActivity {
         foto.setImageResource(R.drawable.ic_perfil);
         btnChangePhoto.setImageResource(R.drawable.gridicons_add);
 
+        /*
+        // 🔵 Firebase comentado
         if (userDoc != null) {
             userDoc.update("fotoPerfil", null);
         }
-
         if (photoRef != null) {
             photoRef.delete();
         }
+        */
     }
 
+    // 🔥 Mostrar foto en el círculo
     private void ponerFoto(ImageView imageView, String uri) {
-        if (uri != null && uri.startsWith("http")) {
-            Glide.with(this).load(uri).into(imageView);
-        } else if (uri != null) {
-            imageView.setImageURI(Uri.parse(uri));
+        if (uri != null) {
+            Glide.with(this)
+                    .load(Uri.parse(uri))
+                    .circleCrop()
+                    .into(imageView);
         } else {
             imageView.setImageResource(R.drawable.ic_perfil);
         }
     }
 
-    private void uploadFotoAFirebase(Uri localUri) {
-        if (currentUser == null) {
-            Toast.makeText(this, "No hay usuario logueado, no se puede subir la foto", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // 1. Aseguramos la referencia al Storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Usa SIEMPRE getReference() y después child(...)
-        photoRef = storage.getReference()
-                .child("profile_photos")
-                .child(currentUser.getUid() + ".jpg");
-
-        Toast.makeText(this, "Subiendo foto de perfil...", Toast.LENGTH_SHORT).show();
-
-        // 2. Subir el archivo
-        photoRef.putFile(localUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // 3. Obtener la URL de descarga
-                    photoRef.getDownloadUrl()
-                            .addOnSuccessListener(downloadUri -> {
-
-                                String url = downloadUri.toString();
-                                uriFotoPerfil = url;
-
-                                // 4. Aseguramos la referencia a Firestore
-                                if (userDoc == null) {
-                                    db = FirebaseFirestore.getInstance();
-                                    userDoc = db.collection("usuarios")
-                                            .document(currentUser.getUid());
-                                }
-
-                                // 5. Guardar la URL en Firestore (crea documento si no existe)
-                                Map<String, Object> datos = new HashMap<>();
-                                datos.put("fotoPerfil", url);
-
-                                userDoc.set(datos, com.google.firebase.firestore.SetOptions.merge())
-                                        .addOnSuccessListener(unused -> {
-                                            Toast.makeText(this,
-                                                    "Foto de perfil actualizada",
-                                                    Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(this,
-                                                    "Error guardando la URL en Firestore: " + e.getMessage(),
-                                                    Toast.LENGTH_LONG).show();
-                                        });
-
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this,
-                                        "Error obteniendo la URL de la foto: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this,
-                            "Error al subir la foto de perfil: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                });
-    }
-
-
+    /*
+    //---------------------- SUBIR FOTO A FIREBASE (COMENTADO) ----------------------
+    private void uploadFotoAFirebase(Uri localUri) { ... }
+    */
 
     private void mostrarDialogoCerrarSesion() {
+
+        // Firebase no se usa ya, pero dejo el código comentado
+        /*
+        FirebaseAuth.getInstance().signOut();
+        */
+
         new AlertDialog.Builder(this)
                 .setTitle("Cerrar sesión")
                 .setMessage("¿Estás seguro de que quieres cerrar sesión?")
                 .setPositiveButton("Cerrar sesión", (dialog, which) -> {
-                    FirebaseAuth.getInstance().signOut();
 
                     Intent intent = new Intent(PerfilActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
