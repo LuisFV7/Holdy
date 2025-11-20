@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D6D6F8">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Botón atrás -->
+        <ImageButton
+            android:id="@+id/btnBackNuevo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_back"
+            app:tint="#23295c"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Título pantalla -->
+        <TextView
+            android:id="@+id/tituloNuevo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Añadir Paquete"
+            android:fontFamily="@font/inter_semibold"
+            android:textSize="26sp"
+            android:textColor="#23295c"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnBackNuevo"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Campo título -->
+        <EditText
+            android:id="@+id/etTituloPaquete"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_bg"
+            android:hint="Título del paquete"
+            android:fontFamily="@font/inter_regular"
+            android:paddingHorizontal="16dp"
+            android:textColor="#23295c"
+            android:textColorHint="#8C8C8C"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/tituloNuevo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Campo empresa -->
+        <EditText
+            android:id="@+id/etEmpresaPaquete"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_bg"
+            android:hint="Empresa (Amazon, Correos…)"
+            android:fontFamily="@font/inter_regular"
+            android:paddingHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etTituloPaquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Campo estado -->
+        <EditText
+            android:id="@+id/etEstadoPaquete"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_bg"
+            android:hint="Estado (En camino, entregado…)"
+            android:fontFamily="@font/inter_regular"
+            android:paddingHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etEmpresaPaquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Campo fecha -->
+        <EditText
+            android:id="@+id/etFechaPaquete"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_bg"
+            android:hint="Fecha estimada (opcional)"
+            android:fontFamily="@font/inter_regular"
+            android:paddingHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etEstadoPaquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <EditText
+            android:id="@+id/etFotoUrlPaquete"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_bg"
+            android:hint="URL de la foto (opcional)"
+            android:fontFamily="@font/inter_regular"
+            android:paddingHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etFechaPaquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- Botón Guardar -->
+        <Button
+            android:id="@+id/btnGuardarPaquete"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="Guardar Paquete"
+            android:fontFamily="@font/inter_semibold"
+            android:textSize="18sp"
+            android:backgroundTint="#3D3DA8"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/etFotoUrlPaquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

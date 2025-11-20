@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_buscar"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+
+
+    <item
+        android:id="@+id/filtrar_en_camino"
+        android:title="Ver solo en camino" />
+
+    <item
+        android:id="@+id/filtrar_recibidos"
+        android:title="Ver solo recibidos" />
+
+    <item
+        android:id="@+id/orden_mas_nuevos"
+        android:title="Más nuevos" />
+
+    <item
+        android:id="@+id/orden_mas_antiguos"
+        android:title="Más antiguos" />
+
+    <item
+        android:id="@+id/action_todos"
+        android:title="Ver todos" />
+</menu>
