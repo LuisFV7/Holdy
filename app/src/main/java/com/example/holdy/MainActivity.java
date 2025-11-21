@@ -25,9 +25,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity
 {
-    private static final int RC_SIGN_IN = 9001; // Código de solicitud para el inicio de sesión
+    private static final int RC_SIGN_IN = 9001; // Código de solicitud
     private GoogleSignInClient mGoogleSignInClient;
-    private FirebaseAuth mAuth;  // FirebaseAuth para gestionar la autenticación
+    private FirebaseAuth mAuth;  // FirebaseAuth para autenticación
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +38,11 @@ public class MainActivity extends AppCompatActivity
         // Inicializar Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Configura Google Sign-In
+        // Configurar Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Usa el Client ID del archivo strings.xml
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity
             return insets;
         });
 
-        // Configura el botón de inicio de sesión de Google
+        // BOTÓN GOOGLE
         findViewById(R.id.googleBoton).setOnClickListener(view -> signInWithGoogle());
     }
 
@@ -65,12 +64,10 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Resultado de Google Sign-In
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                // Google Sign-In fue exitoso, ahora autenticamos con Firebase
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 Log.w("Google Sign-In", "Error de inicio de sesión con Google", e);
@@ -82,21 +79,28 @@ public class MainActivity extends AppCompatActivity
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d("Google Sign-In", "firebaseAuthWithGoogle:" + account.getId());
 
-        // Usa el token de ID de Google para autenticar con Firebase
-        Task<AuthResult> authResultTask = mAuth.signInWithCredential(GoogleAuthProvider.getCredential(account.getIdToken(), null));
+        Task<AuthResult> authResultTask = mAuth.signInWithCredential(
+                GoogleAuthProvider.getCredential(account.getIdToken(), null)
+        );
+
         authResultTask.addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
-                // El inicio de sesión con Firebase fue exitoso
+
                 FirebaseUser user = mAuth.getCurrentUser();
                 Toast.makeText(this, "¡Bienvenido, " + user.getDisplayName() + "!", Toast.LENGTH_SHORT).show();
-                // Puedes agregar más lógica aquí, como redirigir a otra actividad
+
+                // REDIRIGIR A INICIO DIRECTAMENTE
+                Intent intent = new Intent(MainActivity.this, InicioActivity.class);
+                startActivity(intent);
+                finish(); // ← cerrar MainActivity para NO volver atrás
+
             } else {
-                // Si la autenticación falla, muestra un mensaje de error
                 Toast.makeText(this, "Error al iniciar sesión con Firebase", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    // NAVEGACIÓN NORMAL
     public void lanzarAcercaDe(View view){
         Intent i = new Intent(this, AcercaDeActivity.class);
         startActivity(i);
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
+
     public void irARegistrarte(View view) {
         Intent i = new Intent(this, RegistrarteActivity.class);
         startActivity(i);

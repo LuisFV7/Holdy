@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -49,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         // Firebase
         mAuth = FirebaseAuth.getInstance();
 
-        // Google Sign-In
+        // GOOGLE SIGN-IN
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -68,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         etContrasena = findViewById(R.id.etContrasena);
         btnEye = findViewById(R.id.btnEye);
 
-        // --- MOSTRAR / OCULTAR CONTRASEÑA ---
+        // Mostrar/ocultar contraseña
         btnEye.setOnClickListener(v -> {
             if (passwordVisible) {
                 etContrasena.setTransformationMethod(new android.text.method.PasswordTransformationMethod());
@@ -79,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             passwordVisible = !passwordVisible;
         });
 
-        // --- LOGIN CON USUARIO + PASSWORD ---
+        // LOGIN USUARIO Y CONTRASEÑA
         Button btnLogin = findViewById(R.id.btnLogin);
 
         btnLogin.setOnClickListener(v -> {
@@ -94,11 +93,10 @@ public class LoginActivity extends AppCompatActivity {
             irAInicio(email, pass);
         });
 
-        // Botón Google
+        // BOTÓN GOOGLE
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInWithGoogle());
 
-
-        //  Olvidar contraseña → RecuperarEmailActivity
+        // Recuperar contraseña
         Button btnContrasena = findViewById(R.id.btnContrasena);
         btnContrasena.setOnClickListener(v -> {
             Intent i = new Intent(LoginActivity.this, RecuperarEmailActivity.class);
@@ -109,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mAuth.getCurrentUser() != null);
+        // if (mAuth.getCurrentUser() != null);  // <- no hacía nada
     }
 
     // -----------------------------------------
@@ -182,7 +180,11 @@ public class LoginActivity extends AppCompatActivity {
                                 : "usuario";
 
                         Toast.makeText(this, "¡Bienvenido, " + nombre + "!", Toast.LENGTH_SHORT).show();
-                        //goHome();
+
+                        // ENVIAR A INICIO CUANDO SE LOGUEA CON GOOGLE
+                        Intent intent = new Intent(LoginActivity.this, InicioActivity.class);
+                        startActivity(intent);
+                        finish(); // ← cerrar LoginActivity
 
                     } else {
                         Toast.makeText(this, "Error al iniciar sesión con Firebase", Toast.LENGTH_SHORT).show();

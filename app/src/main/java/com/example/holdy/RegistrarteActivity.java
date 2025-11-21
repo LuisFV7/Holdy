@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,12 +54,10 @@ public class RegistrarteActivity extends AppCompatActivity {
         etPassConfirm  = findViewById(R.id.etPassConfirm);
         etTelefono     = findViewById(R.id.etTelefono);
 
-
         findViewById(R.id.btnContinuar).setOnClickListener(v -> register());
 
+        // LINK "Ya tengo cuenta"
         TextView tvLogin = findViewById(R.id.tvLoginLink);
-
-
         SpannableString content = new SpannableString(tvLogin.getText().toString());
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
         tvLogin.setText(content);
@@ -68,23 +67,21 @@ public class RegistrarteActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-
+        // GOOGLE SIGN-IN CONFIG
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
 
         findViewById(R.id.btnGoogleRegister).setOnClickListener(v -> signInWithGoogle());
     }
-
 
     public void volverAMain(android.view.View view) {
         finish();
     }
 
+    // REGISTRO NORMAL ------------------------------------
     private void register() {
         String nombre   = val(etNombre);
         String apellidos= val(etApellidos);
@@ -95,69 +92,32 @@ public class RegistrarteActivity extends AppCompatActivity {
 
         boolean hasError = false;
 
-        // NOMBRE
-        if (nombre.isEmpty()) {
-            etNombre.setError("Nombre requerido");
-            hasError = true;
-        } else {
-            etNombre.setError(null);
+        if (nombre.isEmpty()) { etNombre.setError("Nombre requerido"); hasError = true; }
+        if (apellidos.isEmpty()) { etApellidos.setError("Apellidos requeridos"); hasError = true; }
+
+        if (TextUtils.isEmpty(correo) || !Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            etCorreo.setError("Correo inválido"); hasError = true;
         }
 
-        // APELLIDOS
-        if (apellidos.isEmpty()) {
-            etApellidos.setError("Apellidos requeridos");
-            hasError = true;
-        } else {
-            etApellidos.setError(null);
-        }
-
-        // CORREO ELECTRONICO
-        if (TextUtils.isEmpty(correo) ||
-                !Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            etCorreo.setError("Correo inválido");
-            hasError = true;
-        } else {
-            etCorreo.setError(null);
-        }
-
-        // CONTRASEÑA
         if (pass1.isEmpty()) {
-            etPass.setError("Contraseña requerida");
-            hasError = true;
+            etPass.setError("Contraseña requerida"); hasError = true;
         } else if (pass1.length() < 6) {
-            etPass.setError("Mín. 6 caracteres");
-            hasError = true;
-        } else {
-            etPass.setError(null);
+            etPass.setError("Mín. 6 caracteres"); hasError = true;
         }
 
-        // CONFIRMAR CONTRASEÑA
         if (pass2.isEmpty()) {
-            etPassConfirm.setError("Confirmar contraseña requerida");
-            hasError = true;
+            etPassConfirm.setError("Confirmar contraseña requerida"); hasError = true;
         } else if (!pass1.equals(pass2)) {
-            etPassConfirm.setError("Las contraseñas no coinciden");
-            hasError = true;
-        } else {
-            etPassConfirm.setError(null);
+            etPassConfirm.setError("Las contraseñas no coinciden"); hasError = true;
         }
-
 
         if (telefono.isEmpty()) {
-            etTelefono.setError("Teléfono requerido");
-            hasError = true;
+            etTelefono.setError("Teléfono requerido"); hasError = true;
         } else if (!telefono.matches("^[0-9+()\\-\\s]{7,}$")) {
-            etTelefono.setError("Teléfono inválido");
-            hasError = true;
-        } else {
-            etTelefono.setError(null);
+            etTelefono.setError("Teléfono inválido"); hasError = true;
         }
 
-
-        if (hasError) {
-            return;
-        }
-
+        if (hasError) return;
 
         auth.createUserWithEmailAndPassword(correo, pass1)
                 .addOnCompleteListener(this, task -> {
@@ -171,12 +131,10 @@ public class RegistrarteActivity extends AppCompatActivity {
                     FirebaseUser user = auth.getCurrentUser();
                     if (user == null) return;
 
-
                     String display = (nombre + " " + apellidos).trim();
                     user.updateProfile(new UserProfileChangeRequest.Builder()
                             .setDisplayName(display)
                             .build());
-
 
                     Map<String, Object> perfil = new HashMap<>();
                     perfil.put("nombre", nombre);
@@ -192,9 +150,13 @@ public class RegistrarteActivity extends AppCompatActivity {
                                         "Registro completado correctamente",
                                         Toast.LENGTH_LONG).show();
 
-                                Intent i = new Intent(RegistrarteActivity.this, LoginActivity.class);
+                                // ANTES: iba a LoginActivity
+                                // Intent i = new Intent(RegistrarteActivity.this, LoginActivity.class);
+
+                                // AHORA: IR DIRECTO A INICIO
+                                Intent i = new Intent(RegistrarteActivity.this, InicioActivity.class);
                                 startActivity(i);
-                                finish();
+                                finish(); // ← cerrar pantalla de registro
                             })
                             .addOnFailureListener(e ->
                                     Toast.makeText(this,
@@ -206,7 +168,7 @@ public class RegistrarteActivity extends AppCompatActivity {
 
     private String val(EditText e) { return e.getText().toString().trim(); }
 
-
+    // GOOGLE SIGN-IN -------------------------------------
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -217,7 +179,8 @@ public class RegistrarteActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
@@ -228,18 +191,31 @@ public class RegistrarteActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        Task<AuthResult> authResultTask = auth.signInWithCredential(
-                GoogleAuthProvider.getCredential(account.getIdToken(), null));
 
-        authResultTask.addOnCompleteListener(this, task -> {
-            if (task.isSuccessful()) {
-                FirebaseUser user = auth.getCurrentUser();
-                Toast.makeText(this,
-                        "¡Bienvenido, " + (user != null ? user.getDisplayName() : "") + "!",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Error al iniciar sesión con Firebase", Toast.LENGTH_SHORT).show();
-            }
-        });
+        AuthCredential credential =
+                GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+
+                        //USUARIO YA AUTENTICADO
+                        FirebaseUser user = auth.getCurrentUser();
+
+                        Toast.makeText(this,
+                                "¡Bienvenido, " + (user != null ? user.getDisplayName() : "") + "!",
+                                Toast.LENGTH_SHORT).show();
+
+                        //IR DIRECTO A INICIO DESPUÉS DE GOOGLE
+                        Intent intent = new Intent(RegistrarteActivity.this, InicioActivity.class);
+                        startActivity(intent);
+                        finish(); // cerrar activity
+
+                    } else {
+                        Toast.makeText(this,
+                                "Error al iniciar sesión con Firebase",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
