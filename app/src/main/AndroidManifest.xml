@@ -60,7 +60,7 @@
         <activity android:name=".PaqueteAmazonActivity" />
         <activity android:name=".NuevoPaqueteActivity" />
 
-
+        <activity android:name=".NotificacionActivity" />
     </application>
 
 </manifest>
