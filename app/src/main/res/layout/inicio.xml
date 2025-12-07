@@ -34,6 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/logo" />
 
+            <!-- Icono campana (notificaciones) -->
             <ImageView
                 android:id="@+id/imageView9"
                 android:layout_width="40dp"
@@ -44,6 +45,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/notificaciones" />
 
+            <!-- Icono ajustes -->
             <ImageView
                 android:id="@+id/imageView10"
                 android:layout_width="35dp"
@@ -53,6 +55,85 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView9"
                 app:layout_constraintTop_toTopOf="@+id/imageView9"
                 app:srcCompat="@drawable/settings" />
+
+            <!-- Triángulo que conecta la campana con el popup -->
+            <ImageView
+                android:id="@+id/imgNotifPointer"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/imageView9"
+                app:layout_constraintEnd_toEndOf="@+id/cardNotificaciones"
+                android:src="@drawable/notif_triangle" />
+
+            <!-- POPUP DE NOTIFICACIONES -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardNotificaciones"
+                android:layout_width="280dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#D6D6F8"
+                app:layout_constraintTop_toBottomOf="@+id/imgNotifPointer"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <!-- Lista de notificaciones -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvNotificaciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:paddingBottom="4dp"
+                        tools:listitem="@layout/item_notificacion" />
+
+                    <!-- Línea separadora -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#C0B6FF" />
+
+                    <!-- Fila "Ver todos" -->
+                    <LinearLayout
+                        android:id="@+id/rowVerTodos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical|end"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="4dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/txtVerTodos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ver todos"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="#23295C" />
+
+                        <ImageView
+                            android:id="@+id/imgVerTodosArrow"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="4dp"
+                            android:src="@drawable/icon_arrow_right" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- TARJETA MORADA DEL PAQUETE NUEVO -->
             <androidx.cardview.widget.CardView
@@ -112,7 +193,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-
             <!-- TEXTO “Últimas entregas” -->
             <TextView
                 android:id="@+id/txtUltimas"
@@ -125,7 +205,6 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardNuevoPaquete" />
-
 
             <!-- CUADRO DE ÚLTIMAS ENTREGAS -->
             <androidx.cardview.widget.CardView
@@ -290,7 +369,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
 
     <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA -->
     <ImageView
