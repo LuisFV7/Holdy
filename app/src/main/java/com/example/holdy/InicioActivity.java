@@ -15,28 +15,30 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Pantalla de inicio: muestra la tarjeta morada, últimas entregas
-// y el popup de notificaciones en la campana.
+// Pantalla de inicio: tarjeta morada, últimas entregas (paquetes)
+// y popup de notificaciones urgentes (eventos de seguridad).
 public class InicioActivity extends AppCompatActivity {
 
-    // ------------------- FIREBASE (paquetes) -------------------
+    // ------------------- FIREBASE -------------------
     private FirebaseFirestore db;
 
-    // Vistas de últimas entregas (3 elementos)
+    // ------------------- ÚLTIMAS ENTREGAS (PAQUETES) -------------------
     private ImageView ivEntrega1, ivEntrega2, ivEntrega3;
     private TextView tvFecha1, tvFecha2, tvFecha3;
     private TextView tvTitulo1, tvTitulo2, tvTitulo3;
     private TextView tvEstado1, tvEstado2, tvEstado3;
 
-    // ------------------- POPUP NOTIFICACIONES -------------------
+    // ------------------- POPUP NOTIFICACIONES (EVENTOS) -------------------
     private RecyclerView rvNotificaciones;
     private NotificacionAdapter notifAdapter;
     private final List<Notificacion> notifList = new ArrayList<>();
@@ -52,10 +54,10 @@ public class InicioActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.inicio);
 
-        // Inicializamos Firestore
+        // ----------- Firebase ----------
         db = FirebaseFirestore.getInstance();
 
-        // ------------------- NAV BAR INFERIOR -------------------
+        // ----------- NAV BAR INFERIOR ----------
         ImageView navRight = findViewById(R.id.navRight);
         navRight.setOnClickListener(v -> {
             Intent intent = new Intent(InicioActivity.this, PerfilActivity.class);
@@ -64,12 +66,12 @@ public class InicioActivity extends AppCompatActivity {
 
         ImageView navHome = findViewById(R.id.navHome);
         navHome.setOnClickListener(v -> {
-            // Ya estás en inicio, pero podrías refrescar si quisieras
+            // Ya estás en inicio, podrías refrescar si quisieras
         });
 
         ImageView navCamara = findViewById(R.id.navCamara);
         navCamara.setOnClickListener(v -> {
-            // Más adelante puedes abrir la cámara aquí
+            // Aquí más adelante puedes abrir la cámara
         });
 
         // Card de "Últimas entregas" → abre MisPaquetesActivity
@@ -86,7 +88,7 @@ public class InicioActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // ------------------- REFERENCIAS ÚLTIMAS ENTREGAS -------------------
+        // ----------- REFERENCIAS ÚLTIMAS ENTREGAS ----------
         ivEntrega1 = findViewById(R.id.ivEntrega1);
         ivEntrega2 = findViewById(R.id.ivEntrega2);
         ivEntrega3 = findViewById(R.id.ivEntrega3);
@@ -103,21 +105,21 @@ public class InicioActivity extends AppCompatActivity {
         tvEstado2 = findViewById(R.id.tvEstado2);
         tvEstado3 = findViewById(R.id.tvEstado3);
 
-        // Cargamos las últimas entregas desde Firebase
+        // Cargamos las últimas 3 entregas desde la colección "paquetes"
         cargarUltimasEntregas();
 
-        // ------------------- POPUP NOTIFICACIONES (CAMPANA) -------------------
+        // ----------- POPUP NOTIFICACIONES (EVENTOS) ----------
         rvNotificaciones = findViewById(R.id.rvNotificaciones);
         rvNotificaciones.setLayoutManager(new LinearLayoutManager(this));
         notifAdapter = new NotificacionAdapter(notifList);
         rvNotificaciones.setAdapter(notifAdapter);
 
         cardNotificaciones = findViewById(R.id.cardNotificaciones);
-        bell = findViewById(R.id.imageView9);       // icono de campana
+        bell = findViewById(R.id.imageView9);       // icono campana
         imgPointer = findViewById(R.id.imgNotifPointer);
         rowVerTodos = findViewById(R.id.rowVerTodos);
 
-        // Click en la campana → mostrar/ocultar popup
+        // Click en la campana → mostrar / ocultar popup
         bell.setOnClickListener(v -> {
             if (cardNotificaciones.getVisibility() == View.VISIBLE) {
                 cardNotificaciones.setVisibility(View.GONE);
@@ -128,22 +130,22 @@ public class InicioActivity extends AppCompatActivity {
             }
         });
 
-        // Click en "Ver todos" → abre la pantalla completa de notificaciones
+        // "Ver todos" → ir a la pantalla completa de notificaciones
         rowVerTodos.setOnClickListener(v -> {
             Intent i = new Intent(InicioActivity.this, NotificacionActivity.class);
             startActivity(i);
         });
 
-        // De momento, notificaciones de ejemplo (luego vendrán de Firebase)
-        cargarNotifsDummy();
+        // Escuchar en tiempo real la colección "eventos" (seguridad urgente)
+        escucharEventosPopup();
     }
 
     // =========================================================
-    //              ÚLTIMAS ENTREGAS (FIREBASE)
+    //              ÚLTIMAS ENTREGAS (COLECCIÓN "paquetes")
     // =========================================================
     private void cargarUltimasEntregas() {
         db.collection("paquetes")
-                // Idealmente ordenar por un campo "timestamp"
+                // Idealmente: ordenar por un campo timestamp. De momento usamos "fecha".
                 .orderBy("fecha", Query.Direction.DESCENDING)
                 .limit(3)
                 .get()
@@ -196,7 +198,7 @@ public class InicioActivity extends AppCompatActivity {
         }
     }
 
-    // Devuelve icono según el texto del título
+    // Devuelve un icono según el título del paquete
     private int obtenerIconoPorTitulo(String titulo) {
         if (titulo == null) return R.drawable.ic_package_amazon;
 
@@ -216,36 +218,59 @@ public class InicioActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    //              NOTIFICACIONES (POPUP CAMPANA)
+    //              EVENTOS DE SEGURIDAD (POPUP CAMPANA)
     // =========================================================
-    // Método temporal para rellenar la lista con datos falsos
-    private void cargarNotifsDummy() {
-        notifList.clear();
+    private void escucharEventosPopup() {
+        db.collection("eventos")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(3) // solo las 3 últimas alertas en el popup
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.e("InicioActivity", "Error escuchando eventos", error);
+                        return;
+                    }
 
-        // Notificación de paquete NUEVO
-        notifList.add(new Notificacion(
-                "Nuevo paquete entregado",
-                "Amazon - entregado hace 5 min",
-                "5 min",
-                "paquete",
-                "nuevo"));
+                    notifList.clear();
 
-        // Notificación de paquete LEÍDO
-        notifList.add(new Notificacion(
-                "Paquete en camino",
-                "Correos - llega hoy",
-                "2 h",
-                "paquete",
-                "leido"));
+                    if (value != null) {
+                        for (QueryDocumentSnapshot doc : value) {
+                            String buzonId = doc.getString("buzonId");
+                            String mensaje = doc.getString("mensaje");
+                            Timestamp ts = doc.getTimestamp("timestamp");
 
-        // Notificación de seguridad URGENTE
-        notifList.add(new Notificacion(
-                "Alerta sin autorización",
-                "Caja forzada a las 23:39",
-                "2 h",
-                "seguridad",
-                "urgente"));
+                            String titulo = "Alerta en " + (buzonId != null ? buzonId : "buzón");
+                            String textoHora = formatearTiempo(ts);
 
-        notifAdapter.notifyDataSetChanged();
+                            // Tipo "seguridad" + estado "urgente" → se pintará en rojo
+                            notifList.add(new Notificacion(
+                                    titulo,
+                                    mensaje != null ? mensaje : "",
+                                    textoHora,
+                                    "seguridad",
+                                    "urgente"
+                            ));
+                        }
+                    }
+
+                    notifAdapter.notifyDataSetChanged();
+                });
+    }
+
+    // Mismo formato de tiempo que en NotificacionActivity
+    private String formatearTiempo(Timestamp ts) {
+        if (ts == null) return "";
+
+        long ahora = System.currentTimeMillis();
+        long evento = ts.toDate().getTime();
+        long diff = ahora - evento;
+
+        long minutos = diff / (60 * 1000);
+        long horas = diff / (60 * 60 * 1000);
+        long dias = diff / (24 * 60 * 60 * 1000);
+
+        if (minutos < 1) return "Ahora";
+        if (minutos < 60) return minutos + " min";
+        if (horas < 24) return horas + " h";
+        return dias + " d";
     }
 }
