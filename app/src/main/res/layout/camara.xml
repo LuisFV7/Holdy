@@ -6,7 +6,23 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Gri alan (foto_de_camera.png) + yazı -->
+    <!-- Map -->
+    <ImageButton
+        android:id="@+id/btnMap"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/bx_map"
+        android:contentDescription="Mapa"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:scaleType="centerInside"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <FrameLayout
         android:id="@+id/cameraFrame"
         android:layout_width="343dp"
@@ -28,7 +44,7 @@
 
 
 
-    <!-- Abrir butonu (236x51, radius 50, shadow Y=2 benzeri) -->
+    <!-- Abrir  -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAbrir"
         android:layout_width="236dp"
@@ -44,7 +60,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- ALT TOOLBAR (Inicio/Perfil ile aynı) -->
+    <!-- TOOLBAR  -->
     <ImageView
         android:id="@+id/navBackground"
         android:layout_width="0dp"
@@ -66,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Camara (sol) - logo_camera -->
+    <!-- Camara  - logo_camera -->
     <ImageView
         android:id="@+id/navCamara"
         android:layout_width="90dp"
@@ -76,7 +92,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Perfil (sağ) -->
+    <!-- Perfil  -->
     <ImageView
         android:id="@+id/navRight"
         android:layout_width="90dp"
