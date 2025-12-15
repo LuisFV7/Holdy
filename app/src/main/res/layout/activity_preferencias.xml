@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Başlık -->
+
         <TextView
             android:id="@+id/tvPreferenciasTitle"
             android:layout_width="match_parent"
