@@ -1,9 +1,14 @@
 package com.example.holdy;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,10 +28,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-// Pantalla de inicio: tarjeta morada, últimas entregas (paquetes)
-// y popup de notificaciones urgentes (eventos de seguridad).
+// Pantalla de inicio: tarjeta morada, últimas entregas (paquetes),
+// popup de notificaciones y alerta grande con sonido para eventos de seguridad.
 public class InicioActivity extends AppCompatActivity {
 
     // ------------------- FIREBASE -------------------
@@ -47,6 +53,11 @@ public class InicioActivity extends AppCompatActivity {
     private ImageView bell;
     private ImageView imgPointer;
     private LinearLayout rowVerTodos;
+
+    // ------------------- ALERTA GRANDE + SONIDO -------------------
+    // Guardamos el timestamp (en ms) del último evento procesado
+    private long ultimoEventoMs = 0;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +82,8 @@ public class InicioActivity extends AppCompatActivity {
 
         ImageView navCamara = findViewById(R.id.navCamara);
         navCamara.setOnClickListener(v -> {
-            // Aquí más adelante puedes abrir la cámara
+            Intent intent = new Intent(InicioActivity.this, CamaraActivity.class);
+            startActivity(intent);
         });
 
         // Card de "Últimas entregas" → abre MisPaquetesActivity
@@ -219,6 +231,7 @@ public class InicioActivity extends AppCompatActivity {
 
     // =========================================================
     //              EVENTOS DE SEGURIDAD (POPUP CAMPANA)
+    //              + disparar alerta grande con sonido
     // =========================================================
     private void escucharEventosPopup() {
         db.collection("eventos")
@@ -232,11 +245,20 @@ public class InicioActivity extends AppCompatActivity {
 
                     notifList.clear();
 
+                    long maxTimestampMs = ultimoEventoMs; // para detectar nuevos eventos
+
                     if (value != null) {
                         for (QueryDocumentSnapshot doc : value) {
                             String buzonId = doc.getString("buzonId");
                             String mensaje = doc.getString("mensaje");
-                            Timestamp ts = doc.getTimestamp("timestamp");
+
+                            // ⚠️ Leer timestamp de forma SEGURA (puede ser Timestamp o número)
+                            Timestamp ts = leerTimestampSeguro(doc, "timestamp");
+
+                            long tsMs = ts != null ? ts.toDate().getTime() : 0;
+                            if (tsMs > maxTimestampMs) {
+                                maxTimestampMs = tsMs;
+                            }
 
                             String titulo = "Alerta en " + (buzonId != null ? buzonId : "buzón");
                             String textoHora = formatearTiempo(ts);
@@ -253,7 +275,41 @@ public class InicioActivity extends AppCompatActivity {
                     }
 
                     notifAdapter.notifyDataSetChanged();
+
+                    // Si hemos detectado un evento MÁS RECIENTE que el último visto,
+                    // mostramos la alerta grande con sonido UNA VEZ.
+                    if (maxTimestampMs > ultimoEventoMs && maxTimestampMs != 0) {
+                        ultimoEventoMs = maxTimestampMs;
+
+                        // Cogemos el mensaje del evento más reciente
+                        String mensajeUltimo = "Alerta de seguridad en el buzón";
+                        if (value != null && !value.isEmpty()) {
+
+                            DocumentSnapshot docMasNuevo = value.getDocuments().get(0);
+                            String m = docMasNuevo.getString("mensaje");
+                            if (m != null && !m.isEmpty()) {
+                                mensajeUltimo = m;
+                            }
+                        }
+
+                        mostrarAlertaSeguridad(mensajeUltimo);
+                    }
                 });
+    }
+
+    // Lee un campo "timestamp" tolerando diferentes tipos (Timestamp, Long, Double...)
+    private Timestamp leerTimestampSeguro(DocumentSnapshot doc, String campo) {
+        Object tsObj = doc.get(campo);
+        if (tsObj instanceof Timestamp) {
+            return (Timestamp) tsObj;
+        } else if (tsObj instanceof Long) {
+            return new Timestamp(new Date((Long) tsObj));
+        } else if (tsObj instanceof Double) {
+            return new Timestamp(new Date(((Double) tsObj).longValue()));
+        } else {
+            // Si es String u otro tipo, podrías parsearlo aquí si quieres
+            return null;
+        }
     }
 
     // Mismo formato de tiempo que en NotificacionActivity
@@ -272,5 +328,62 @@ public class InicioActivity extends AppCompatActivity {
         if (minutos < 60) return minutos + " min";
         if (horas < 24) return horas + " h";
         return dias + " d";
+    }
+
+    // -------------------------------------------------------
+    // Muestra el diálogo grande de alerta y reproduce el sonido
+    // -------------------------------------------------------
+    private void mostrarAlertaSeguridad(String mensaje) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_alerta_seguridad);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        dialog.setCancelable(false); // el usuario debe pulsar Cerrar
+
+        TextView tvMensaje = dialog.findViewById(R.id.tvMensajeAlerta);
+        Button btnCerrar = dialog.findViewById(R.id.btnCerrarAlerta);
+
+        tvMensaje.setText(mensaje);
+
+        btnCerrar.setOnClickListener(v -> {
+            detenerSonidoAlarma();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+        reproducirSonidoAlarma();
+    }
+
+    // Reproduce el sonido de alarma en bucle
+    private void reproducirSonidoAlarma() {
+        detenerSonidoAlarma(); // por si hubiera uno sonando ya
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.alarma);
+        if (mediaPlayer != null) {
+            mediaPlayer.setLooping(true); // suena hasta que el usuario cierre
+            mediaPlayer.start();
+        }
+    }
+
+    // Detiene el sonido de alarma
+    private void detenerSonidoAlarma() {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+            } catch (IllegalStateException ignored) {}
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    // Por seguridad, paramos el sonido si la Activity se destruye
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        detenerSonidoAlarma();
     }
 }
