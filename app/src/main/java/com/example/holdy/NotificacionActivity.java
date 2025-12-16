@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,10 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-// Actividad que muestra todas las notificaciones en una pantalla completa
+// Pantalla que muestra TODAS las notificaciones:
+// - Paquetes (dummy por ahora)
+// - Eventos de seguridad (colección "eventos" en Firestore)
 public class NotificacionActivity extends AppCompatActivity {
 
     // RecyclerView y adaptador
@@ -26,9 +35,9 @@ public class NotificacionActivity extends AppCompatActivity {
     private NotificacionAdapter notifAdapter;
 
     // Lista original con TODAS las notificaciones
-    private List<Notificacion> listaOriginal = new ArrayList<>();
-    // Lista filtrada que realmente se muestra en pantalla
-    private List<Notificacion> listaFiltrada = new ArrayList<>();
+    private final List<Notificacion> listaOriginal = new ArrayList<>();
+    // Lista filtrada que realmente se muestra
+    private final List<Notificacion> listaFiltrada = new ArrayList<>();
 
     // Botones de filtro
     private Button btnFiltroTodas, btnFiltroPaquetes, btnFiltroSeguridad;
@@ -42,17 +51,20 @@ public class NotificacionActivity extends AppCompatActivity {
     // Texto de búsqueda actual
     private String textoBusqueda = "";
 
+    // Firestore
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notificacion);
 
-        // -------------------------------
-        // Referencias a las vistas
-        // -------------------------------
+        // ---- Firebase ----
+        db = FirebaseFirestore.getInstance();
+
+        // ---- Referencias a vistas ----
         rvNotificacionesFull = findViewById(R.id.rvNotificacionesFull);
         rvNotificacionesFull.setLayoutManager(new LinearLayoutManager(this));
-
         notifAdapter = new NotificacionAdapter(listaFiltrada);
         rvNotificacionesFull.setAdapter(notifAdapter);
 
@@ -62,108 +74,126 @@ public class NotificacionActivity extends AppCompatActivity {
         btnFiltroSeguridad = findViewById(R.id.btnFiltroSeguridad);
         edtBuscarNotif = findViewById(R.id.edtBuscarNotif);
 
-        // Flecha atrás → volver a la pantalla anterior
-        imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        // Volver atrás
+        imgBack.setOnClickListener(v -> finish());
+
+        // ---- Filtros ----
+        btnFiltroTodas.setOnClickListener(v -> {
+            filtroActual = "todas";
+            aplicarFiltro();
+            actualizarEstilosBotones();
         });
 
-        // -------------------------------
-        // Listeners de los botones filtro
-        // -------------------------------
-        btnFiltroTodas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filtroActual = "todas";
-                aplicarFiltro();
-                actualizarEstilosBotones();
-            }
+        btnFiltroPaquetes.setOnClickListener(v -> {
+            filtroActual = "paquetes";
+            aplicarFiltro();
+            actualizarEstilosBotones();
         });
 
-        btnFiltroPaquetes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filtroActual = "paquetes";
-                aplicarFiltro();
-                actualizarEstilosBotones();
-            }
+        btnFiltroSeguridad.setOnClickListener(v -> {
+            filtroActual = "seguridad";
+            aplicarFiltro();
+            actualizarEstilosBotones();
         });
 
-        btnFiltroSeguridad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filtroActual = "seguridad";
-                aplicarFiltro();
-                actualizarEstilosBotones();
-            }
-        });
-
-        // -------------------------------
-        // Listener del buscador (texto)
-        // -------------------------------
+        // ---- Buscador ----
         edtBuscarNotif.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No necesitamos hacer nada aquí
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Guardamos el texto actual (en minúsculas para comparar)
                 textoBusqueda = s.toString().toLowerCase().trim();
                 aplicarFiltro();
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // Tampoco necesitamos nada aquí
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
-        // Cargamos datos de prueba (más adelante vendrán desde Firebase)
-        cargarNotifsDummy();
+        // ---- Cargar datos desde Firestore ----
+        escucharEventosYPaquetes();
 
-        // Estilo inicial: "Todas" activa
+        // Estilo inicial: filtro "Todas" activo
         actualizarEstilosBotones();
     }
 
     // ---------------------------------------------------
-    // Datos de prueba (se quitarán cuando usemos Firebase)
+    // Escucha la colección "eventos" y añade también
+    // 2 notificaciones de paquetes (dummy por ahora).
     // ---------------------------------------------------
-    private void cargarNotifsDummy() {
-        listaOriginal.clear();
+    private void escucharEventosYPaquetes() {
+        db.collection("eventos")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((QuerySnapshot value, com.google.firebase.firestore.FirebaseFirestoreException error) -> {
+                    if (error != null) {
+                        return;
+                    }
 
-        listaOriginal.add(new Notificacion(
-                "Nuevo paquete entregado",
-                "Amazon - entregado hace 5 min",
-                "5 min",
-                "paquete",
-                "nuevo"
-        ));
+                    // Limpiamos la lista original
+                    listaOriginal.clear();
 
-        listaOriginal.add(new Notificacion(
-                "Paquete en camino",
-                "Correos - llega hoy",
-                "2 h",
-                "paquete",
-                "leido"
-        ));
+                    // --------- Paquetes dummy (ejemplo) ---------
+                    listaOriginal.add(new Notificacion(
+                            "Nuevo paquete entregado",
+                            "Amazon - entregado hace 5 min",
+                            "5 min",
+                            "paquete",
+                            "nuevo"
+                    ));
 
-        listaOriginal.add(new Notificacion(
-                "Alerta sin autorización",
-                "Caja forzada a las 23:39",
-                "2 h",
-                "seguridad",
-                "urgente"
-        ));
+                    listaOriginal.add(new Notificacion(
+                            "Paquete en camino",
+                            "Correos - llega hoy",
+                            "2 h",
+                            "paquete",
+                            "leido"
+                    ));
 
-        aplicarFiltro();
+                    // --------- Eventos reales de seguridad ---------
+                    if (value != null) {
+                        for (QueryDocumentSnapshot doc : value) {
+                            String buzonId = doc.getString("buzonId");
+                            String mensaje = doc.getString("mensaje");
+
+                            // ⚠️ Usar la misma lectura segura que en InicioActivity
+                            Timestamp ts = leerTimestampSeguro(doc, "timestamp");
+                            String textoHora = formatearTiempo(ts);
+
+                            String titulo = "Alerta en " + (buzonId != null ? buzonId : "buzón");
+
+                            listaOriginal.add(new Notificacion(
+                                    titulo,
+                                    mensaje != null ? mensaje : "",
+                                    textoHora,
+                                    "seguridad",
+                                    "urgente"
+                            ));
+                        }
+                    }
+
+                    // Aplicamos filtro actual y búsqueda
+                    aplicarFiltro();
+                });
+    }
+
+    // Lee un campo "timestamp" tolerando diferentes tipos (Timestamp, Long, Double...)
+    private Timestamp leerTimestampSeguro(DocumentSnapshot doc, String campo) {
+        Object tsObj = doc.get(campo);
+        if (tsObj instanceof Timestamp) {
+            return (Timestamp) tsObj;
+        } else if (tsObj instanceof Long) {
+            return new Timestamp(new Date((Long) tsObj));
+        } else if (tsObj instanceof Double) {
+            return new Timestamp(new Date(((Double) tsObj).longValue()));
+        } else {
+            return null;
+        }
     }
 
     // ---------------------------------------------------
     // Aplica filtro (todas/paquetes/seguridad) + texto búsqueda
+    // sobre listaOriginal → listaFiltrada
     // ---------------------------------------------------
     private void aplicarFiltro() {
         listaFiltrada.clear();
@@ -174,18 +204,16 @@ public class NotificacionActivity extends AppCompatActivity {
             String titulo = n.getTitulo() != null ? n.getTitulo().toLowerCase() : "";
             String mensaje = n.getMensaje() != null ? n.getMensaje().toLowerCase() : "";
 
-            // 1️⃣ Primero aplicamos el filtro de tipo
+            // 1) filtro por tipo
             boolean pasaFiltroTipo = false;
 
             switch (filtroActual) {
                 case "todas":
                     pasaFiltroTipo = true;
                     break;
-
                 case "paquetes":
                     pasaFiltroTipo = "paquete".equals(tipo);
                     break;
-
                 case "seguridad":
                     pasaFiltroTipo = "seguridad".equals(tipo) || "urgente".equals(estado);
                     break;
@@ -193,7 +221,7 @@ public class NotificacionActivity extends AppCompatActivity {
 
             if (!pasaFiltroTipo) continue;
 
-            // 2️⃣ Luego aplicamos el filtro de búsqueda
+            // 2) filtro por texto de búsqueda
             if (!textoBusqueda.isEmpty()) {
                 boolean coincide =
                         titulo.contains(textoBusqueda) ||
@@ -202,7 +230,6 @@ public class NotificacionActivity extends AppCompatActivity {
                 if (!coincide) continue;
             }
 
-            // Si pasa ambos filtros, lo añadimos
             listaFiltrada.add(n);
         }
 
@@ -237,15 +264,33 @@ public class NotificacionActivity extends AppCompatActivity {
         }
     }
 
-    // Botón en estado ACTIVO
     private void activarBoton(Button btn, int colorBg, int colorTexto) {
         btn.setBackgroundTintList(ColorStateList.valueOf(colorBg));
         btn.setTextColor(colorTexto);
     }
 
-    // Botón en estado INACTIVO
     private void desactivarBoton(Button btn, int colorBg, int colorTexto) {
         btn.setBackgroundTintList(ColorStateList.valueOf(colorBg));
         btn.setTextColor(colorTexto);
+    }
+
+    // ---------------------------------------------------
+    // Formatea el Timestamp tipo "5 min", "2 h", "3 d"
+    // ---------------------------------------------------
+    private String formatearTiempo(Timestamp ts) {
+        if (ts == null) return "";
+
+        long ahora = System.currentTimeMillis();
+        long evento = ts.toDate().getTime();
+        long diff = ahora - evento;
+
+        long minutos = diff / (60 * 1000);
+        long horas = diff / (60 * 60 * 1000);
+        long dias = diff / (24 * 60 * 60 * 1000);
+
+        if (minutos < 1) return "Ahora";
+        if (minutos < 60) return minutos + " min";
+        if (horas < 24) return horas + " h";
+        return dias + " d";
     }
 }
