@@ -68,7 +68,7 @@ public class PerfilActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perfil);
 
-        // 🔥 Parche necesario para evitar bloqueo de URI en Android 11+
+        // Parche necesario para evitar bloqueo de URI en Android 11+
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
@@ -104,10 +104,18 @@ public class PerfilActivity extends AppCompatActivity {
         tvCuenta.setOnClickListener(irCuentaListener);
         ivCuentaArrow.setOnClickListener(irCuentaListener);
 
+        // AYUDA - Nuevo código para lanzar la pantalla de chat
+        LinearLayout btnAyudaLayout = findViewById(R.id.btnAyuda);
+        btnAyudaLayout.setOnClickListener(v -> {
+            // Asegúrate de crear esta nueva Activity
+            Intent i = new Intent(PerfilActivity.this, AyudaActivity.class);
+            startActivity(i);
+        });
+
         // AJUSTES
         ImageButton btnAjustes = findViewById(R.id.btnAjustes);
         btnAjustes.setOnClickListener(v -> {
-            Intent i = new Intent(PerfilActivity.this, CambiarContrasenaPerfilActivity.class);
+            Intent i = new Intent(PerfilActivity.this, PreferenciasActivity.class);
             startActivity(i);
         });
 
@@ -123,7 +131,7 @@ public class PerfilActivity extends AppCompatActivity {
 
                         Uri uri = result.getData().getData();
 
-                        // 🔥 Permiso persistente para leer la foto SIEMPRE
+                        //  Permiso persistente para leer la foto SIEMPRE
                         try {
                             getContentResolver().takePersistableUriPermission(
                                     uri,
@@ -268,7 +276,7 @@ public class PerfilActivity extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
 
-        // 🔥 Obligatorio para leer después
+        //  Obligatorio para leer después
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -309,7 +317,7 @@ public class PerfilActivity extends AppCompatActivity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uriUltimaFoto);
 
-            // 🔥 Obligatorio
+            //  Obligatorio
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 

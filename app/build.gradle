@@ -37,6 +37,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation "com.google.mlkit:image-labeling:17.0.8"
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+
+
+    // Retrofit (para peticiones HTTP)
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    // Gson Converter (para convertir JSON a objetos Java)
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
 

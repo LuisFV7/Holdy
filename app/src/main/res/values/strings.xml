@@ -23,6 +23,7 @@
 
     <string name="search">Buscar</string>
     <string name="back">Volver</string>
+    <string name="google_maps_key">AIzaSyAlvMI41kmgtSeYyGareBpFU-lAE8HR0Xw</string>
 
 
 </resources>

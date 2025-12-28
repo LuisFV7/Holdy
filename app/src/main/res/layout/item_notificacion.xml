@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Icono (paquete o urgente) -->
+        <ImageView
+            android:id="@+id/imgIconoNotif"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/paquete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txtTituloNotif"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nuevo paquete entregado"
+            android:textColor="#23295C"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@id/imgIconoNotif"
+            app:layout_constraintTop_toTopOf="@id/imgIconoNotif"
+            app:layout_constraintEnd_toStartOf="@id/txtEstadoNotif"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginStart="8dp" />
+
+        <!-- Etiqueta de estado (Nuevo / Leído / Urgente) -->
+        <TextView
+            android:id="@+id/txtEstadoNotif"
+            android:layout_width="56dp"
+            android:layout_height="24dp"
+            android:text="Nuevo"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:background="@drawable/badge_nuevo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Mensaje secundario -->
+        <TextView
+            android:id="@+id/txtMensajeNotif"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Amazon - entregado hace 5 min"
+            android:textColor="#23295C"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@id/imgIconoNotif"
+            app:layout_constraintTop_toBottomOf="@id/txtTituloNotif"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp" />
+
+        <!-- Hora (2h, 5 min, etc.) -->
+        <TextView
+            android:id="@+id/txtHoraNotif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2h"
+            android:textColor="#23295C"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
