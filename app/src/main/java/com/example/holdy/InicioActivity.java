@@ -75,9 +75,9 @@ public class InicioActivity extends AppCompatActivity {
         navCamara.setOnClickListener(v -> {
             Intent intent = new Intent(InicioActivity.this, CamaraActivity.class);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
         });
-
 
         // Card de "Últimas entregas" → abre MisPaquetesActivity
         CardView cardEntregas = findViewById(R.id.cardEntregas);

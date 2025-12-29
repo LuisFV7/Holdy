@@ -388,4 +388,10 @@ public class PerfilActivity extends AppCompatActivity {
         startActivity(i);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
+
+    public void irACamara(View view) {
+        Intent i = new Intent(this, CamaraActivity.class);
+        startActivity(i);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 }

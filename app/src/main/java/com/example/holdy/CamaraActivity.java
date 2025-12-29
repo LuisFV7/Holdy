@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -63,11 +64,6 @@ public class CamaraActivity extends AppCompatActivity {
         navRight.setOnClickListener(v -> {
             Intent i = new Intent(CamaraActivity.this, PerfilActivity.class);
             startActivity(i);
-        });
-
-        // Cámara → ya estamos aquí
-        navCamara.setOnClickListener(v -> {
-            // Nothing
         });
     }
 
