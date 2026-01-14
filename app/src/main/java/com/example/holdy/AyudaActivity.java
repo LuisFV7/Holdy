@@ -10,21 +10,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.net.ConnectException;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AyudaActivity extends AppCompatActivity {
-
 
     private RecyclerView rvMessages;
     private EditText etMessage;
@@ -32,27 +25,16 @@ public class AyudaActivity extends AppCompatActivity {
     private MessageAdapter adapter;
     private Handler mainHandler;
 
-    private static final String BASE_URL = "https://api.openai.com";
-    private static final String CHAT_URL = BASE_URL + "/v1/chat/completions";
-
-
-    //private static final String API_KEY
-
-
-    private static final String PROJECT_ID = "PEGAR_TU_PROJ_ID_AQUÍ"; 
-
-    private static final String MODEL = "gpt-3.5-turbo";
-
-    private final OkHttpClient http = new OkHttpClient();
-    private final List<JSONObject> history = new ArrayList<>();
+    //  Llamada a Cloud Functions (backend seguro)
+    private FirebaseFunctions functions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // ... (El resto del onCreate es el mismo) ...
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ayuda);
 
         mainHandler = new Handler(Looper.getMainLooper());
+        functions = FirebaseFunctions.getInstance("europe-west1");
 
         rvMessages = findViewById(R.id.rvMessages);
         etMessage = findViewById(R.id.etMessage);
@@ -63,9 +45,7 @@ public class AyudaActivity extends AppCompatActivity {
         rvMessages.setLayoutManager(new LinearLayoutManager(this));
         rvMessages.setAdapter(adapter);
 
-        history.add(msg("system",
-                "Eres un ayudante servicial y experto en el sistema Holdy de buzones inteligentes, sensores y configuración IoT. Responde breve, claro y con pasos."));
-
+        // Mensaje inicial del bot
         adapter.addMessage(new Message(
                 "¡Hola! Soy el asistente de Holdy. Pregúntame sobre los Sensores, la Cámara o las Notificaciones.",
                 1
@@ -77,101 +57,73 @@ public class AyudaActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        // ... (El resto de sendMessage es el mismo) ...
         String userMessage = etMessage.getText().toString().trim();
         if (userMessage.isEmpty()) return;
 
         etMessage.setText("");
 
+        // 1) Pintar mensaje del usuario
         adapter.addMessage(new Message(userMessage, 0));
         rvMessages.scrollToPosition(adapter.getItemCount() - 1);
 
+        // 2) Pintar "Escribiendo..."
         Message loading = new Message("Escribiendo...", 1);
         adapter.addMessage(loading);
         rvMessages.scrollToPosition(adapter.getItemCount() - 1);
 
-        history.add(msg("user", userMessage));
-
-        new Thread(() -> {
-            String answer;
-            try {
-                answer = callChat();
-                history.add(msg("assistant", answer));
-            } catch (Exception e) {
-                // ... (El diagnóstico del error es el mismo) ...
-                String errorMessage = e.getMessage();
-
-                if (e.getCause() instanceof ConnectException) {
-                    errorMessage = "Error de Red: No se pudo conectar al servidor de la IA. Revisa tu conexión a Internet.";
-                } else if (errorMessage != null && errorMessage.contains("HTTP Error 401")) {
-                    errorMessage = " 401: CLAVE API INCORRECTA.";
-                } else if (errorMessage != null && errorMessage.contains("HTTP Error 404")) {
-                    errorMessage = " 404: MODELO INCORRECTO. Revisa: " + MODEL;
-                } else if (errorMessage != null && errorMessage.contains("HTTP Error 400")) {
-                    errorMessage = " 400: Error de Petición. Confirma que el PROJECT ID y la Clave son correctos.";
-                } else {
-                    errorMessage = "Error desconocido: " + errorMessage;
-                }
-
-                answer = "¡Fallo LLM! " + errorMessage;
-            }
-
-            String finalAnswer = answer;
-            mainHandler.post(() -> {
-                adapter.removeLastMessage();
-                adapter.addMessage(new Message(finalAnswer, 1));
-                rvMessages.scrollToPosition(adapter.getItemCount() - 1);
-            });
-        }).start();
-    }
-
-    private String callChat() throws Exception {
-        JSONArray messages = new JSONArray();
-        int start = Math.max(0, history.size() - 10);
-        for (int i = start; i < history.size(); i++) messages.put(history.get(i));
-
-        JSONObject bodyJson = new JSONObject();
-        bodyJson.put("model", MODEL);
-        bodyJson.put("messages", messages);
-        bodyJson.put("stream", false);
-
-        RequestBody body = RequestBody.create(
-                bodyJson.toString(),
-                MediaType.parse("application/json; charset=utf-8")
+        // 3) Llamar a backend (Cloud Function)
+        callSupportChat(userMessage,
+                reply -> mainHandler.post(() -> {
+                    // Quita "Escribiendo..." (último mensaje)
+                    adapter.removeLastMessage();
+                    // Añade respuesta del bot
+                    adapter.addMessage(new Message(reply, 1));
+                    rvMessages.scrollToPosition(adapter.getItemCount() - 1);
+                }),
+                e -> mainHandler.post(() -> {
+                    adapter.removeLastMessage();
+                    adapter.addMessage(new Message("¡Fallo LLM! " + safeError(e), 1));
+                    rvMessages.scrollToPosition(adapter.getItemCount() - 1);
+                })
         );
+    }
 
-        // *** CAMBIO CLAVE: AÑADIR EL ENCABEZADO DEL PROJECT ID ***
-        Request request = new Request.Builder()
-                .url(CHAT_URL)
-                //.addHeader("Authorization", "Bearer " + API_KEY)
-                .addHeader("OpenAI-Project", PROJECT_ID) // <-- ¡Esta es la corrección!
-                .post(body)
-                .build();
+    private void callSupportChat(String userText,
+                                 java.util.function.Consumer<String> onOk,
+                                 java.util.function.Consumer<Exception> onErr) {
 
-        try (Response resp = http.newCall(request).execute()) {
-            if (!resp.isSuccessful()) {
-                throw new Exception("HTTP Error " + resp.code() + " - " +
-                        (resp.body() != null ? resp.body().string() : ""));
-            }
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", userText);
 
-            String json = resp.body() != null ? resp.body().string() : "{}";
-            JSONObject root = new JSONObject(json);
+        functions
+                .getHttpsCallable("supportChat")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    Object raw = result.getData();
+                    if (!(raw instanceof Map)) {
+                        onOk.accept("Sin respuesta del servidor.");
+                        return;
+                    }
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> res = (Map<String, Object>) raw;
 
-            JSONArray choices = root.optJSONArray("choices");
-            if (choices == null || choices.length() == 0) return "No hay respuesta del modelo.";
+                    Object replyObj = res.get("reply");
+                    String reply = (replyObj != null) ? replyObj.toString() : "Sin respuesta.";
+                    onOk.accept(reply);
+                })
+                .addOnFailureListener(e -> {
+                    if (e instanceof Exception) onErr.accept((Exception) e);
+                    else onErr.accept(new Exception(e));
+                });
 
-            JSONObject choice0 = choices.getJSONObject(0);
-            JSONObject msg = choice0.getJSONObject("message");
-            return msg.optString("content", "Sin contenido.");
+    }
+
+    private String safeError(Exception e) {
+        if (e instanceof FirebaseFunctionsException) {
+            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+            return "Functions " + ffe.getCode() + ": " + ffe.getMessage();
         }
+        return (e.getMessage() != null) ? e.getMessage() : "Error desconocido";
     }
 
-    private JSONObject msg(String role, String content) {
-        JSONObject o = new JSONObject();
-        try {
-            o.put("role", role);
-            o.put("content", content);
-        } catch (Exception ignored) {}
-        return o;
-    }
 }
